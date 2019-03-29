@@ -1,0 +1,172 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,root.dir="Write your wd here")
+```
+## The Data
+
+First of all load and examine the data. The data was randomly generated but we can pretend it is a species count at twenty sites. Each site was sampled in three habitat types. This is a typical species list format that can be collected in the field. The format is not the best for analysis though and we need to check for errors.
+
+```{r}
+mydata<-read.csv("FakeData.csv")
+head(mydata)
+str(mydata)
+```
+
+## Type issues and Typing issues
+
+First you will notice that **Site** is of type integer and needs to be converted to a factor. We should also check for data entry mistakes.
+
+```{r}
+mydata$Site<-as.factor(mydata$Site)
+sort(unique(mydata$Site))
+sort(unique(mydata$Habitat))
+sort(unique(mydata$Species))
+range(mydata$Count)
+```
+
+You will see a number of typos. Firstly Habitat has both the levels **INT** and **int** - this needs to be standardised. We will use the function **toupper()**. You may also see that "Species 9" and " Species 9" both exist and so do **"Species 28"** and **"species 28"**. Time to clean it up. We will use **trimws()** and **gsub()**. We will also use **gsub()** to remove the spaces in species names in case we want to match the data with phylogeny tips for example. Underscores are also easier to spot than spaces which helps if typos lead to multiple spaces between the Genus and Species names.  One the mistakes are fixed we can make a unique site ID column.
+
+```{r}
+mydata$Habitat<-toupper(mydata$Habitat)
+sort(unique(mydata$Habitat))
+mydata$Species<-trimws(mydata$Species)
+mydata$Species<-gsub("species 28","Species 28",mydata$Species,fixed=TRUE)
+mydata$Species<-gsub(" ","_",mydata$Species,fixed=TRUE)
+sort(unique(mydata$Species))
+
+mydata$siteID<-paste0(mydata$Site,":",mydata$Habitat)
+```
+
+## Species by site table
+
+One of the most commonly used formats for analysis is a species by site table. This is a wide format but our data is in long format. We best fix that but first we will check for duplicate records. The unique site identifier we made earlier will come in handy here. We are going to need **reshape2**.
+
+```{r}
+library(reshape2)
+duplicates<-dcast(mydata,siteID ~ Species, value.var="Count",fun.aggregate=length)
+range(duplicates[,2:31])
+
+```
+
+Good no duplicates each species only has a single entry for each site. Let's proceed by changing the function from length (how many) to sum. In this case there will be no summing as we have just checked for multiple species-site records, so it will just return the value.
+
+```{r}
+
+Ltable<-dcast(mydata,siteID ~ Species, value.var="Count",fun.aggregate=sum)
+View(Ltable)
+```
+
+This table is great for community based analyses. We can also easily convert it from abundance to presence absence.
+
+```{r}
+Ltableocc<-Ltable[,2:31]
+Ltableocc[Ltableocc>0]<-1
+Ltableocc$siteID<-Ltable$siteID
+range(Ltableocc[,1:30])
+```
+
+## Temporal replicates
+
+Suppose we did multiple surveys at different times of the year and wanted full species abundance data for each site year round. To do this we would need to combine the replicates.
+
+First we load all the data
+
+```{r}
+Ltable2<-read.csv("FakeL1.csv")
+Ltable3<-read.csv("FakeL2.csv")
+head(Ltable3)
+```
+
+We can see there is an issue as the three temporal replicates have different numbers of species.
+
+```{r}
+length(names(Ltable))
+length(names(Ltable2))
+length(names(Ltable3))
+```
+
+We need to find out the full species list with the siteID column as well.
+
+```{r}
+AllSpp<-unique(c(as.character(colnames(Ltable)),as.character(colnames(Ltable2)),as.character(colnames(Ltable3))))
+AllSpp
+```
+
+Before we add the tables we need to make sure the rows and columns are the same. In this case we know the rows (sites) are the same but as we have just seen the columns differ. Here is a function that adds in the missing species.
+
+```{r}
+checkSpp<-function(Ltable,SpeciesList){
+  
+  missing<-setdiff(SpeciesList,names(Ltable))
+  Added<-matrix(0,ncol=(length(missing)),nrow=nrow(Ltable))
+  colnames(Added)<-missing
+  Added<-data.frame(Added)
+  full<-cbind(Ltable,Added)
+  return(full)
+}
+
+R1ck<-checkSpp(Ltable,AllSpp)
+R2ck<-checkSpp(Ltable2,AllSpp)
+R3ck<-checkSpp(Ltable3,AllSpp)
+
+dim(R1ck)
+dim(R2ck)
+dim(R3ck)
+
+```
+
+The tables also need reordering to make sure everything is exactly the same.
+
+```{r}
+library(plyr)
+
+OrderTable<-function(Ltable,x){ #  x denotes the column containing the site IDs
+
+  justSpp<-Ltable[,-x]
+  Sppsort<-sort(colnames(justSpp)) 
+  ordered1<-Ltable[c(Sppsort)] 
+  ordered2<-cbind(Ltable[,x],ordered1)
+  ordered3<-arrange(ordered2,as.character(ordered2[,x]))
+  colnames(ordered3)[x]<-"siteID"
+  return(ordered3)
+}
+
+R1F<-OrderTable(R1ck,1)
+R2F<-OrderTable(R2ck,1)
+R3F<-OrderTable(R3ck,1)
+```
+
+Now we can sum the species abundance sections of the tables.
+
+```{r}
+
+R1Fmat<-as.matrix(R1F[,2:33])
+R2Fmat<-as.matrix(R2F[,2:33])
+R3Fmat<-as.matrix(R3F[,2:33])
+addedL<-R1Fmat+R2Fmat+R3Fmat
+
+```
+
+## Aggregation
+
+If we decided not to consider the habitat types individually we can aggregate the data based on **Site**.
+
+First we need to retrieve the siteID. As the order of the data hasn't changed this is simple.
+
+```{r}
+addedL<-as.data.frame(addedL)
+addedL$siteID<-R1F$siteID
+```
+
+Then we need a column with just the site number. Earlier we combined the information to make a unique siteID, now we can get it back using **gsub()**.
+
+```{r}
+addedL$siteNo<-gsub(":.*","",addedL$siteID)
+```
+
+Now we can use **aggregate()**.
+
+```{r}
+aggregatedL<-aggregate(addedL[,1:32],by=list(addedL$siteNo),FUN=sum)
+```
+
+This is just an introduction and there are many other useful ways to manipulate your data and check for errors. Look for tutorials or use the data wrangling cheatsheet to find out more.

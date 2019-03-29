@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>UQ Biology Bioinformatics sessions</title>
+    <description>Monthly discussions about bioinformatics and coding in general</description>
+    <link>http://uqbioinfo.github.io</link>
+    <atom:link href="http://uqbioinfo.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>DAPC in `adegenet`</title>
+        <description>&lt;p&gt;On the 28th of April session, &lt;a href=&quot;&quot;&gt;Josh&lt;/a&gt; made a nice and easy demo of how to use &lt;code class=&quot;highlighter-rouge&quot;&gt;adegenet&lt;/code&gt; in &lt;code class=&quot;highlighter-rouge&quot;&gt;R&lt;/code&gt; for easy population genetics pipeline analysis: “From SNPs to structure: population genetic analyses using R’s adegenet function”.&lt;/p&gt;
+
+&lt;p&gt;Josh’s slides are available &lt;a href=&quot;/pdf/2019-03-28-Josh.pdf&quot;&gt;here&lt;/a&gt; and documentation about &lt;code class=&quot;highlighter-rouge&quot;&gt;adegenet&lt;/code&gt; &lt;a href=&quot;https://github.com/thibautjombart/adegenet&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 28 Mar 2019 00:00:00 +1000</pubDate>
+        <link>http://uqbioinfo.github.io/Josh/</link>
+        <guid isPermaLink="true">http://uqbioinfo.github.io/Josh/</guid>
+      </item>
+    
+  </channel>
+</rss>

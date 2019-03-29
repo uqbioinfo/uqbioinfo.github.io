@@ -1,0 +1,45 @@
+
+//
+// VARIABLES
+//
+
+// Colors
+$blue: #4183C4;
+$BESGreen: #164632;
+$background1: #252525;
+$background2: #2a2a29;
+$background3: #1c1c1c;
+$lightGrey1: #e8e8e8;
+$lightGrey2: #b6b6b6;
+$lightGrey3: #666666;
+$darkGrey1: #434343;
+$orange1: #ff7400;
+$orange2: #ff9640;
+
+// Grays
+$black: #000;
+$darkerGray: #222;
+$darkGray: #333;
+$gray: #666;
+$lightGray: #eee;
+$white: #fff;
+
+// Greens
+$darkGreen: #164632;
+$lightGreen: #3F735D;
+$darkerGreen: #093120;
+$darkGreenComp: #663420;
+$lightGreenComp: #A8715B;
+$darkerGreenComp: #481E0D;
+
+// Font stacks
+$helvetica: Helvetica, Arial, sans-serif;
+$helveticaNeue: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$georgia: Georgia, serif;
+
+// Mobile breakpoints
+@mixin mobile {
+  @media screen and (max-width: 640px) {
+    @content;
+  }
+}

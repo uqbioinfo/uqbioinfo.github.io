@@ -8,7 +8,7 @@ permalink: /schedule/
 
 | When          | What                 | Who                   |
 |:--------------|:-------------------:|:-----------------------|
-|    -- |   -- |   |
+|  2019/05/07  -- | From RNAseq to multispecies alignments  -- | Iva  |
 
 ## Who did what and when?
 

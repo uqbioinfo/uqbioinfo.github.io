@@ -13,5 +13,5 @@ If you want to suggest a topic for next session or send me your notes from a pre
 ### Contributors
 * [Thomas Guillerme](http://tguillerme.github.io)
 * [James Hereward](http://researchers.uq.edu.au/researcher/1855)
-* [Alicia Toons](https://www.researchgate.net/profile/Alicia_Toon)
+* [Alicia Toon](https://www.researchgate.net/profile/Alicia_Toon)
 
